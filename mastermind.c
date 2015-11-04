@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <stdbool.h>
 
 #define MAX_SIZE 6
 
 void secret_guess(int count, char * secret_holder);
+int type_check(int count, char * array);
 
 int main(void)
 {
@@ -33,15 +36,21 @@ int main(void)
 			printf("Guess a number: ");
 			fgets(guess, MAX_SIZE, stdin);
 
+			if (!(type_check(count, guess)))
+			{
+				printf("False!\n");
+			}
+
 			if (guess[4] == '\n')
 			{
-				printf("Correct\n");	
+				printf("Correct input\n");	
 			}
 			else if (guess[4] != '\n')
 			{
 				printf("That was not a valid guess\n");
 				while ((c = getchar()) != '\n' && c != EOF)
 				{
+					//eats end of user input after 4
 				}
 				goto start;
 				//break;
@@ -90,4 +99,17 @@ void secret_guess(int count, char * secret_holder)
 		secret_holder[count] = r;
 		printf("%c", secret_holder[count]);
 	}
+}
+
+int type_check(int count, char * array)
+{
+	for (count = 0; count < 4; count++)
+	{
+		if (!isdigit(array[count]))
+		{
+			printf("Input not a number\n");
+			return 0;
+		}
+	}
+	return 1;
 }
