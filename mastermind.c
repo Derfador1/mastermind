@@ -10,16 +10,15 @@ int main(void)
 {
 	char computer_guess[MAX_SIZE];
 	char *guess;
-	char *checker;
 	int red = 0;
 	int white = 0;
 	int red_counter;
 	int white_counter;
 	int count = 0;
 	int total_guesses = 0;
+	int c;
 
 	guess = malloc(MAX_SIZE);
-	checker = malloc(MAX_SIZE);
 	
 	srand(time(NULL));
 
@@ -40,29 +39,29 @@ int main(void)
 			}
 			else if (guess[4] != '\n')
 			{
-				printf("enter again\n");
-				guess[0] = '\0';
+				printf("That was not a valid guess\n");
+				while ((c = getchar()) != '\n' && c != EOF)
+				{
+				}
 				goto start;
 				//break;
 			}
 
 			for (red_counter = 0; red_counter < 4; red_counter++)
 			{
-				checker[red_counter] = guess[red_counter];
-				if (computer_guess[red_counter] == checker[red_counter])
+				if (computer_guess[red_counter] == guess[red_counter])
 				{
 					red++;
-					checker[red_counter] = 11;
+					guess[red_counter] = 11;
 				}
 				else
 				{
 					for (white_counter = 0; white_counter < 4; white_counter++)
 					{
-						checker[white_counter] = guess[white_counter];
-						if (computer_guess[red_counter] == checker[white_counter])
+						if (computer_guess[red_counter] == guess[white_counter])
 						{
 							white++;
-							checker[white_counter] = 11;
+							guess[white_counter] = 11;
 							break;
 						}
 					}
@@ -80,7 +79,6 @@ int main(void)
 			white = 0;
 		}
 		free(guess);
-		free(checker);
 	}
 }
 
@@ -90,6 +88,6 @@ void secret_guess(int count, char * secret_holder)
 	{
 		int r = (rand() % 10) + '0';
 		secret_holder[count] = r;
-		//printf("%c", secret_holder[count]);
+		printf("%c", secret_holder[count]);
 	}
 }
