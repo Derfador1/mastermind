@@ -2,7 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdbool.h>
+#include <string.h>
 
 #define MAX_SIZE 6
 
@@ -36,25 +36,30 @@ int main(void)
 			printf("Guess a number: ");
 			fgets(guess, MAX_SIZE, stdin);
 
-			if (!(type_check(count, guess)))
-			{
-				printf("False!\n");
-			}
+			//printf(" is %zu\n", strlen(guess));
 
-			if (guess[4] == '\n')
+			if (strlen(guess) < 5)
 			{
-				printf("Correct input\n");	
+				printf("Not enough digits. Try again.\n");
+				goto start;
 			}
 			else if (guess[4] != '\n')
 			{
-				printf("That was not a valid guess\n");
-				while ((c = getchar()) != '\n' && c != EOF)
+				printf("To many digits. Try again.\n");
+				while((c = getchar()) != '\n' && c != EOF)
 				{
-					//eats end of user input after 4
 				}
 				goto start;
-				//break;
 			}
+			else
+			{
+				if (!(type_check(count, guess)))
+				{
+					printf("Type was incorrect. Try again.\n");
+					goto start;
+				}
+			}
+
 
 			for (red_counter = 0; red_counter < 4; red_counter++)
 			{
@@ -106,10 +111,7 @@ int type_check(int count, char * array)
 	for (count = 0; count < 4; count++)
 	{
 		if (!isdigit(array[count]))
-		{
-			printf("Input not a number\n");
 			return 0;
-		}
 	}
 	return 1;
 }
