@@ -27,8 +27,6 @@ int main(void)
 	computer_guess = malloc(MAX_SIZE);
 	guess = malloc(MAX_SIZE);
 
-	printf("It is %d\n", counter);
-
 	srand(time(NULL));
 
 	secret_guess(counter, computer_guess);
