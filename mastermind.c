@@ -13,6 +13,7 @@ int main(void)
 {
 	char computer_guess[MAX_SIZE];
 	char *guess;
+	char *re_try;
 	int red = 0;
 	int white = 0;
 	int red_counter;
@@ -20,34 +21,42 @@ int main(void)
 	int count = 0;
 	int total_guesses = 0;
 	int c;
+	int begin_again;
 
 	guess = malloc(MAX_SIZE);
 	
+	re_try = malloc(MAX_SIZE);
+
 	srand(time(NULL));
 
 	secret_guess(count, computer_guess);
-
-	printf("\n");
 	
 	start:
 	{
 		while(1)
 		{
-			printf("Guess a number: ");
+			printf("Guess a number (q to quit): ");
 			fgets(guess, MAX_SIZE, stdin);
-
-			//printf(" is %zu\n", strlen(guess));
 
 			if (strlen(guess) < 5)
 			{
-				printf("Not enough digits. Try again.\n");
-				goto start;
+				if (guess[0] == 'q')
+				{
+					printf("You have chosen to quit.\n");
+					break;
+				}
+				else
+				{
+					printf("Not enough digits. Try again.\n");
+					goto start;
+				}
 			}
 			else if (guess[4] != '\n')
 			{
 				printf("To many digits. Try again.\n");
 				while((c = getchar()) != '\n' && c != EOF)
 				{
+					//eats rest of input in stdin buffer
 				}
 				goto start;
 			}
@@ -66,7 +75,7 @@ int main(void)
 				if (computer_guess[red_counter] == guess[red_counter])
 				{
 					red++;
-					guess[red_counter] = 11;
+					guess[red_counter] = 11; //changes guess so that multiple values arent added for red
 				}
 				else
 				{
@@ -75,7 +84,7 @@ int main(void)
 						if (computer_guess[red_counter] == guess[white_counter])
 						{
 							white++;
-							guess[white_counter] = 11;
+							guess[white_counter] = 11; //changes guess so that multiple values 											     arent added for white
 							break;
 						}
 					}
@@ -86,13 +95,37 @@ int main(void)
 			total_guesses++;
 			if (red == 4)
 			{
+
 				printf("You have won in %d guesses\n", total_guesses);
-				break;
+				printf("Would you like to play again? y or n: ");
+				fgets(re_try, sizeof(re_try), stdin);
+
+
+				if (re_try[0] == 'y')
+					begin_again = 1;					
+				else if (re_try[0] == 'n')
+					begin_again = 0;
+				else
+				{
+					do {
+						printf("I did not understand that.\n");
+					} while (begin_again != 1 && begin_again != 0);
+				}
 			}
-			red = 0;
-			white = 0;
+			red = 0;  //resetting red for next guess
+			white = 0;  //resetting white for next guess
+
+
+			if (begin_again == )
+				break;
+			else
+			{
+				goto start;
+			}	
+
 		}
 		free(guess);
+		free(re_try);
 	}
 }
 
@@ -102,7 +135,7 @@ void secret_guess(int count, char * secret_holder)
 	{
 		int r = (rand() % 10) + '0';
 		secret_holder[count] = r;
-		printf("%c", secret_holder[count]);
+		printf("%c\n", secret_holder[count]);
 	}
 }
 
@@ -111,7 +144,17 @@ int type_check(int count, char * array)
 	for (count = 0; count < 4; count++)
 	{
 		if (!isdigit(array[count]))
-			return 0;
+		{
+			if (array[0] == 'q' && array[3] == 't')
+			{
+				printf("quitting\n");
+				exit(1);
+			}
+			else
+			{
+				return 0;
+			}
+		}
 	}
 	return 1;
 }
