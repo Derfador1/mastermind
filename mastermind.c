@@ -8,16 +8,17 @@
 
 void secret_guess(int count, char * secret_holder);
 int type_check(int count, char * array);
+void red_white_checker(int *red, int *white, int red_counter, int white_counter, char * computer_guess, char * guess);
 
 int main(void)
 {
 	char computer_guess[MAX_SIZE];
 	char *guess;
 	char *re_try;
-	int red = 0;
-	int white = 0;
-	int red_counter;
-	int white_counter;
+	int red[] = {0};
+	int white[] = {0};
+	int red_counter = 0;
+	int white_counter = 0;
 	int count = 0;
 	int total_guesses = 0;
 	int c;
@@ -68,32 +69,10 @@ int main(void)
 					goto start;
 				}
 			}
-
-
-			for (red_counter = 0; red_counter < 4; red_counter++)
-			{
-				if (computer_guess[red_counter] == guess[red_counter])
-				{
-					red++;
-					guess[red_counter] = 11; //changes guess so that multiple values arent added for red
-				}
-				else
-				{
-					for (white_counter = 0; white_counter < 4; white_counter++)
-					{
-						if (computer_guess[red_counter] == guess[white_counter])
-						{
-							white++;
-							guess[white_counter] = 11; //changes guess so that multiple values 											     arent added for white
-							break;
-						}
-					}
-				}
-			}
-
-			printf("R:%d and W:%d\n", red, white);
+			red_white_checker(red, white, red_counter, white_counter, computer_guess, guess);
+			printf("R:%d and W:%d\n", *red, *white);
 			total_guesses++;
-			if (red == 4)
+			if (*red == 4)
 			{
 
 				printf("You have won in %d guesses\n", total_guesses);
@@ -102,26 +81,29 @@ int main(void)
 
 
 				if (re_try[0] == 'y')
-					begin_again = 1;					
+				{
+					begin_again = 1;
+					secret_guess(count, computer_guess);
+					*red = 0;
+					*white = 0;
+					goto start;	
+				}				
 				else if (re_try[0] == 'n')
+				{
 					begin_again = 0;
+					break;
+				}
 				else
 				{
 					do {
 						printf("I did not understand that.\n");
 					} while (begin_again != 1 && begin_again != 0);
 				}
+	
 			}
-			red = 0;  //resetting red for next guess
-			white = 0;  //resetting white for next guess
 
-
-			if (begin_again == )
-				break;
-			else
-			{
-				goto start;
-			}	
+			*red = 0;  //resetting value of red for next guess
+			*white = 0;  //resetting the value of white for next guess
 
 		}
 		free(guess);
@@ -157,4 +139,29 @@ int type_check(int count, char * array)
 		}
 	}
 	return 1;
+}
+
+void red_white_checker(int *red, int *white, int red_counter, int white_counter, char * computer_guess, char * guess)
+{
+
+	for (red_counter = 0; red_counter < 4; red_counter++)
+	{
+		if (computer_guess[red_counter] == guess[red_counter])
+		{
+			(*red)++;
+			guess[red_counter] = 11; //changes guess so that multiple values arent added for red
+		}
+		else
+		{
+			for (white_counter = 0; white_counter < 4; white_counter++)
+			{
+				if (computer_guess[red_counter] == guess[white_counter])
+				{
+					(*white)++;
+					guess[white_counter] = 11; //changes guess so that multiple values 											     arent added for white
+					break;
+				}
+			}
+		}
+	}
 }
