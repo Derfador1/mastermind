@@ -6,7 +6,7 @@
 
 const unsigned int MAX_SIZE = 6;
 
-char secret_guess(int counter, char * secret_holder, int cflag);
+char secret_guess(int counter, char * secret_holder, int eflag);
 int type_check(int counter, char * array);
 void red_white_checker(int *red, int *white, char * computer_guess, char * guess, int counter);
 int if_winner(int *red, int total_guesses);
@@ -22,15 +22,16 @@ int main(int argc, char *argv[])
 	int total_guesses = 0;
 	int character_eater;
 	int rflag = 0;
+	int eflag = 0;
 	int cflag = 0;
+	int sflag = 0;
 
 	computer_guess = malloc(MAX_SIZE);
 	guess = malloc(MAX_SIZE);
 
 	srand(time(NULL));
 
-	secret_guess(counter, computer_guess, cflag); 
-
+	secret_guess(counter, computer_guess, eflag); 
 
 	start:
 	{
@@ -38,36 +39,48 @@ int main(int argc, char *argv[])
 		{
 			//begins like normal
 		}
-		else if (argc == 2)
+		else if (argc >= 2 && argc <= 5)
 		{
-			if (strncmp(argv[1], "-h", 10) == 0) //checks if the strings are equal
+			for (int x = 1; x < argc; x++)
 			{
-				printf("Use -s to print secret guess\n");
-				printf("Use -r to remove number of red or white in guess\n");
-				printf("Use -c to cheat to make computer_guess all one number\n");
-			}
-			else if (strncmp(argv[1], "-s", 10) == 0)
-			{
-				printf("%.4s\n", computer_guess); //prints the 4 digit random computer guess
-			}
-			else if (strncmp(argv[1], "-r", 10) == 0)
-			{
-				rflag = 1; //sets rflag for later use
-			}
-			else if (strncmp(argv[1], "-c", 10) == 0)
-			{
-				cflag = 1; //sets cheat flag and resets secret guess
-				secret_guess(counter, computer_guess, cflag);
-			}
-			else
-			{
-				printf("No valid arguments given.\n");
+				if (strncmp(argv[x], "-h", 10) == 0) //checks if the strings are equal
+				{
+					printf("Use -s to print secret guess\n");
+					printf("Use -r to remove number of red or white in guess\n");
+					printf("Use -e to enter easy mode(all 1 number)\n");
+					printf("Use -c to cheat\n");
+				}
+				else if (strncmp(argv[x], "-s", 10) == 0)
+				{
+					sflag = 1; //prints the 4 digit random computer guess
+				}
+				else if (strncmp(argv[x], "-r", 10) == 0)
+				{
+					rflag = 1; //sets rflag for later use
+				}
+				else if (strncmp(argv[x], "-e", 10) == 0)
+				{
+					eflag = 1; //sets cheat flag and resets secret guess
+					secret_guess(counter, computer_guess, eflag);
+				}
+				else if (strncmp(argv[x], "-c", 10) == 0)
+				{
+					cflag = 1; //sets rflag for later use
+				}
+				else
+				{
+					printf("One of the arguments was invalid: %s\n", argv[x]);
+				}
 			}
 		}
 		else
 		{
-			printf("To many arguments given.\n");
+			printf("Too many arguments given.\n");
 		}
+
+		if (sflag == 1)
+			printf("The answer is: %.4s\n", computer_guess);
+
 		while(1)
 		{
 			printf("Guess a number (q to quit): ");
@@ -116,7 +129,11 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			red_white_checker(red, white, computer_guess, guess, counter); //calls function to check for red and white values
+
+			if (cflag == 1)
+				*red = 4;
+			else
+				red_white_checker(red, white, computer_guess, guess, counter); //calls function to check for red and white values
 
 			if (rflag == 1)
 			{
@@ -137,7 +154,7 @@ int main(int argc, char *argv[])
 					*red = 0;
 					*white = 0;
 					total_guesses = 0;
-					secret_guess(counter, computer_guess, cflag);
+					secret_guess(counter, computer_guess, eflag);
 					goto start;
 				}
 				else
@@ -152,9 +169,9 @@ int main(int argc, char *argv[])
 	}
 	
 }
-char secret_guess(int counter, char * secret_holder, int cflag)
+char secret_guess(int counter, char * secret_holder, int eflag)
 {
-	if (cflag == 0)
+	if (eflag == 0)
 	{
 		for (int count = 0; count < counter; count++)
 		{
@@ -233,7 +250,7 @@ int if_winner(int *red, int total_guesses)
 int restarter(char * computer_guess, char * guess)
 {
 	char *re_try;
-	int character_eater2;
+	//int character_eater2;
 
 	re_try = malloc(MAX_SIZE);
 
@@ -241,8 +258,8 @@ int restarter(char * computer_guess, char * guess)
 	{
 		printf("Would you like to play again? y or n: ");
 		fgets(re_try, (MAX_SIZE - 3), stdin);
-
-		if (strlen(re_try) < (MAX_SIZE - 3)) //checks for values that arent bigger then 2
+		
+		if (strlen(re_try) < (MAX_SIZE - 3)) //checks for values that are less then 3
 		{
 			if (re_try[0] == 'y' && re_try[1] == '\n') //makes sure the only thing entered is y and \n	
 			{
@@ -260,9 +277,8 @@ int restarter(char * computer_guess, char * guess)
 			else
 			{
 				printf("I did not understand. Try again.\n");
-				while((character_eater2 = getchar()) != '\n' && character_eater2 != EOF)
-				{
-					//eats rest of input in stdin buffer
+				while(!strrchr(re_try, '\n')){
+					fgets(re_try, (MAX_SIZE - 3), stdin);	
 				}
 			}
 		}
