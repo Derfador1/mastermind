@@ -213,30 +213,40 @@ int if_winner(int *red, int total_guesses)
 int restarter(int counter, char * computer_guess, char * guess)
 {
 	char *re_try;
+	int character_eater2;
 
 	re_try = malloc(MAX_SIZE);
 
 	while(1)
 	{
 		printf("Would you like to play again? y or n: ");
-		fgets(re_try, MAX_SIZE, stdin);
+		fgets(re_try, (MAX_SIZE - 3), stdin);
 
-
-		if (re_try[0] == 'y')
+		if (strlen(re_try) < 3)
 		{
-			secret_guess(counter, computer_guess);
-			free(re_try);
-			return 1;	
-		}				
-		else if (re_try[0] == 'n')
-		{
-			free(re_try);
-			free(guess);
-			free(computer_guess);
-			exit(1);
+			if (re_try[0] == 'y' && re_try[1] == '\n')
+			{
+				secret_guess(counter, computer_guess);
+				free(re_try);
+				return 1;	
+			}				
+			else if (re_try[0] == 'n' && re_try[1] == '\n')
+			{
+				free(re_try);
+				free(guess);
+				free(computer_guess);
+				exit(1);
+			}
+			else
+			{
+				printf("I did not understand. Try again.\n");
+				while((character_eater2 = getchar()) != '\n' && character_eater2 != EOF)
+				{
+					//eats rest of input in stdin buffer
+				}
+			}
 		}
-		else
-			printf("I did not understand. Try again.\n");
+
 	}
 	return 0;
 }
