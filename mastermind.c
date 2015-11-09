@@ -7,14 +7,13 @@
 const unsigned int MAX_SIZE = 6;
 
 
-
-void secret_guess(int counter, char * secret_holder);
+char secret_guess(int counter, char * secret_holder);
 int type_check(int counter, char * array);
 void red_white_checker(int *red, int *white, char * computer_guess, char * guess, int counter);
 int if_winner(int *red, int total_guesses);
 int restarter(int counter, char * computer_guess, char * guess);
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	char *computer_guess;
 	char *guess;
@@ -23,6 +22,8 @@ int main(void)
 	int counter = (MAX_SIZE - 2);
 	int total_guesses = 0;
 	int character_eater;
+	int rflag = 0;
+
 
 	computer_guess = malloc(MAX_SIZE);
 	guess = malloc(MAX_SIZE);
@@ -30,6 +31,38 @@ int main(void)
 	srand(time(NULL));
 
 	secret_guess(counter, computer_guess);
+
+	if (argc == 1)
+	{
+		goto start;
+	}
+	else if (argc == 2)
+	{
+		if (strncmp(argv[1], "-h", 10) == 0) //means they are equal
+		{
+			printf("Use -s to print secret guess\n");
+			printf("Use -r to remove number of red or white in guess\n");
+		}
+		else if (strncmp(argv[1], "-s", 10) == 0)
+		{
+			printf("%.4s\n", computer_guess);
+		}
+		else if (strncmp(argv[1], "-r", 10) == 0)
+		{
+			rflag = 1;
+		}
+		else
+		{
+			printf("No valid arguments given.\n");
+			goto start;
+		}
+	}
+	else
+	{
+		printf("To many arguments given.\n");
+		goto start;
+	}
+
 	
 	start:
 	{
@@ -43,6 +76,8 @@ int main(void)
 				if (guess[0] == 'q')
 				{
 					printf("You have chosen to quit.\n");
+					free(guess);
+					free(computer_guess);
 					break;
 				}
 				else
@@ -71,7 +106,15 @@ int main(void)
 
 			red_white_checker(red, white, computer_guess, guess, counter);
 
-			printf("R:%d and W:%d\n", *red, *white);
+			if (rflag == 1)
+			{
+				//turns off printing feature
+			}
+			else
+			{
+				printf("R:%d and W:%d\n", *red, *white);
+			}
+
 			total_guesses++;
 
 			if(0 == if_winner(red, total_guesses))
@@ -97,14 +140,16 @@ int main(void)
 	}
 }
 
-void secret_guess(int counter, char * secret_holder)
+
+char secret_guess(int counter, char * secret_holder)
 {
+	int r;
 	for (int count = 0; count < counter; count++)
 	{
-		int r = (rand() % 10) + '0';
+		r = (rand() % 10) + '0';
 		secret_holder[count] = r;
-		printf("%c\n", secret_holder[count]);
 	}
+	return *secret_holder;
 }
 
 int type_check(int counter, char * array)
